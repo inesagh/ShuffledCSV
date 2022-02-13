@@ -1,5 +1,6 @@
 package com;
 
+import com.creatingpdf.Service;
 import com.shuffle.ShuffledCSV;
 
 import java.io.File;
@@ -21,7 +22,7 @@ public class Controller {
         }
     }
 
-    public static void controlForPdf(){
-
+    public static void controlForPdf(String fileName){
+        Service.writeToTxt(fileName);
     }
 }
