@@ -25,4 +25,8 @@ public class Controller {
     public static void controlForPdf(String fileName){
         Service.writeToTxt(fileName);
     }
+
+    public static String controlForReadingNormalPdf(String fileName){
+        return Service.readNormalPdf(fileName);
+    }
 }

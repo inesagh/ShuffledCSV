@@ -1,6 +1,7 @@
 package com.creatingpdf;
 
 
+import com.itextpdf.text.pdf.PdfDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
@@ -11,6 +12,7 @@ import java.util.Collections;
 
 public class Service {
     private static String basePath = "C:\\Users\\user\\Desktop\\";
+    private static String basePathForDownloads = "file:\\\\home\\orion\\Downloads\\";
 
     public static String readPdf(String fileName) {
         String encodedText = "";
@@ -34,5 +36,16 @@ public class Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String readNormalPdf(String fileName){
+        String content = "";
+        try(PDDocument pdDocument = PDDocument.load(new File(basePathForDownloads + fileName))){
+            PDFTextStripper stripper = new PDFTextStripper();
+            content = stripper.getText(pdDocument);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 }
