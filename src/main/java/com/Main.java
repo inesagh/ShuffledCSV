@@ -9,7 +9,7 @@ public class Main {
 //        Controller.control();
 //        Controller.controlForPdf("1.pdf");
         List<String> filesName = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 2; i++) {
             filesName.add(i + ".pdf");
         }
         Controller.controlForReadingNormalPdf(filesName);

@@ -15,19 +15,14 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class Service {
     private static String basePath = "C:\\Users\\user\\Desktop\\";
-    private static String basePathForDownloads = "file:\\\\home\\orion\\Downloads\\";
+    private static String basePathForDownloads = "/home/orion/Downloads/";
 
     public static String readPdf(String fileName) {
         String encodedText = "";
@@ -53,13 +48,13 @@ public class Service {
         }
     }
 
-    public static String readNormalPdfAndSaveImages(String fileName) {
+    public static String readNormalPdfAndSaveImages(String fileName, int index) {
         String content = "";
 
-        try (PDDocument pdDocument = PDDocument.load(new File(basePath + fileName))) {
+        try (PDDocument pdDocument = PDDocument.load(new File(basePathForDownloads + fileName))) {
             PDFTextStripper stripper = new PDFTextStripper();
             content = stripper.getText(pdDocument);
-//            saveImages(pdDocument);
+//            saveImages(pdDocument, index);
 //            System.out.println(content);
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +62,7 @@ public class Service {
         return content;
     }
 
-    private static void saveImages(PDDocument pdDocument) throws IOException {
+    private static void saveImages(PDDocument pdDocument, int index) throws IOException {
         for (int i = 0; i < pdDocument.getNumberOfPages(); i++) {
             PDResources pdResources = pdDocument.getPage(i).getResources();
             for (COSName csName : pdResources.getXObjectNames()) {
@@ -76,7 +71,7 @@ public class Service {
                     PDStream pdStream = pdxObject.getStream();
                     PDImageXObject image = new PDImageXObject(pdStream, pdResources);
                     // image storage location and image name
-                    File imgFile = new File(basePath + "img" + i + ".png");
+                    File imgFile = new File(basePathForDownloads + index + "_" + i + ".png");
                     ImageIO.write(image.getImage(), "png", imgFile);
                 }
             }

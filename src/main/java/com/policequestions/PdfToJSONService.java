@@ -4,6 +4,8 @@ import com.creatingpdf.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,7 +14,7 @@ public class PdfToJSONService {
         Root root = new Root();
         List<Group> groups = new ArrayList<>();
         filesName.forEach(each -> {
-            Group group = new Group(filesName.indexOf(each) + 1, "Խումբ " + filesName.indexOf(each) + 1, pdfToJSON(each));
+            Group group = new Group(filesName.indexOf(each) + 1, "Խումբ " + filesName.indexOf(each) + 1, pdfToJSON(each, filesName.indexOf(each) + 1));
             groups.add(group);
         });
         root.setGroups(groups);
@@ -20,17 +22,20 @@ public class PdfToJSONService {
         String result = "";
         try {
             result = objectMapper.writeValueAsString(root);
+            objectMapper.writeValue(new File("question_hy.json"), result);
+            System.out.println(result);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    public static List<Question> pdfToJSON(String fileName) {
-        List<String> pdf = makeNormalPdf(fileName);
+    public static List<Question> pdfToJSON(String fileName, int index) {
+        List<String> pdf = makeNormalPdf(fileName, index);
         List<Question> questions = new ArrayList<>();
         pdf.forEach(each -> {
-            System.out.println(each);
             Question question = toClass(each, pdf.indexOf(each));
             questions.add(question);
         });
@@ -39,13 +44,15 @@ public class PdfToJSONService {
 
     private static Question toClass(String questionAsString, int index) {
         questionAsString = questionAsString.trim();
+        questionAsString = questionAsString.startsWith("\n") ? questionAsString.replaceFirst("\n", "") :
+                questionAsString;
         if(Character.isDigit(questionAsString.charAt(0))){
-            questionAsString = questionAsString.replace(questionAsString.charAt(0) + "", "");
+            questionAsString = questionAsString.replaceFirst(questionAsString.charAt(0) + "", "");
         }
-        if(Character.isDigit(questionAsString.charAt(1))){
-            questionAsString = questionAsString.replace(questionAsString.charAt(1) + "", "");
+        if(Character.isDigit(questionAsString.charAt(0))){
+            questionAsString = questionAsString.replaceFirst(questionAsString.charAt(0) + "", "");
         }
-
+        questionAsString = questionAsString.trim();
         Question questionObj = null;
         String[] split = questionAsString.split("\n");
         String correctAnswerAsString = split[split.length - 1].replace("\r", "").trim();
@@ -80,17 +87,31 @@ public class PdfToJSONService {
     }
 
 
-    public static List<String> makeNormalPdf(String fileName) {
-        String content = Service.readNormalPdfAndSaveImages(fileName);
+    public static List<String> makeNormalPdf(String fileName, int index) {
+        String content = Service.readNormalPdfAndSaveImages(fileName, index);
         String[] splitContent = content.split("\n");
         String backwardSplitContent = "";
         for (int i = splitContent.length - 1; i >= 0; i--) {
             backwardSplitContent += splitContent[i] + "\n";
         }
         List<String> splitContent2 = Arrays.stream(backwardSplitContent.split("Պատ․՝")).collect(Collectors.toList());
-        Collections.reverse(splitContent2);
+        List<String> withoutPageSplitContentList = new ArrayList<>();
+
+        splitContent2.forEach(each -> {
+            int count = 0;
+            for (int i = 0; i < each.length(); i++) {
+                if(Character.isLetter(each.charAt(i))){
+                    count++;
+                }
+            }
+            if(count != 0){
+                withoutPageSplitContentList.add(each);
+            }
+        });
+
+        Collections.reverse(withoutPageSplitContentList);
         List<String> list = new ArrayList<>();
-        for (String a : splitContent2) {
+        for (String a : withoutPageSplitContentList) {
             String[] strings = a.split("\n");
             String asd = "";
             for (int i = strings.length - 1; i >= 0; i--) {
