@@ -1,9 +1,11 @@
 package com;
 
 import com.creatingpdf.Service;
+import com.policequestions.PdfToJSONService;
 import com.shuffle.ShuffledCSV;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -26,7 +28,7 @@ public class Controller {
         Service.writeToTxt(fileName);
     }
 
-    public static String controlForReadingNormalPdf(String fileName){
-        return Service.readNormalPdf(fileName);
+    public static String controlForReadingNormalPdf(List<String> filesName){
+        return PdfToJSONService.pdfsToJSON(filesName);
     }
 }
