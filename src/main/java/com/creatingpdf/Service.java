@@ -54,7 +54,7 @@ public class Service {
         try (PDDocument pdDocument = PDDocument.load(new File(basePathForDownloads + fileName))) {
             PDFTextStripper stripper = new PDFTextStripper();
             content = stripper.getText(pdDocument);
-//            saveImages(pdDocument, index);
+            saveImages(pdDocument, index);
 //            System.out.println(content);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class Service {
                     PDStream pdStream = pdxObject.getStream();
                     PDImageXObject image = new PDImageXObject(pdStream, pdResources);
                     // image storage location and image name
-                    File imgFile = new File(basePathForDownloads + index + "_" + i + ".png");
+                    File imgFile = new File(basePathForDownloads + "ru_img/" + index + "_" + (i + 1) + ".png");
                     ImageIO.write(image.getImage(), "png", imgFile);
                 }
             }
